@@ -1,0 +1,58 @@
+@startuml
+title Sequence Diagram: Bookings (Get Single)
+caption Get Single Booking (GET /bookings/:id)
+
+skinparam shadowing false
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequence {
+  LifeLineBorderColor #6B6B6B
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6B6B6B
+  ParticipantBackgroundColor #CFE2F3
+  ActorBorderColor #6B6B6B
+  ArrowColor #6B6B6B
+}
+
+actor Client as client
+participant ":server" as server <<javaScript>>
+participant ":bookings" as bookingsRouter <<router>>
+participant ":protect" as protectMw <<middleware>>
+participant ":bookings" as bookingsCtrl <<controllers>>
+participant ":Booking" as bookingModel <<model>>
+database ":bookings" as bookingsDB <<MongoDB>>
+
+client -> server : req.get('/api/v1/bookings/{id}')\nBearer token
+activate server
+
+server -> bookingsRouter : app.use('/api/v1/bookings', bookings)
+activate bookingsRouter
+
+bookingsRouter -> protectMw : protect()
+activate protectMw
+protectMw -> protectMw : verify JWT
+protectMw --> bookingsRouter : next()
+deactivate protectMw
+
+bookingsRouter -> bookingsCtrl : getBooking(id)
+activate bookingsCtrl
+
+bookingsCtrl -> bookingModel : findById(id)
+activate bookingModel
+bookingModel -> bookingsDB : query by _id
+activate bookingsDB
+bookingsDB --> bookingModel : booking
+deactivate bookingsDB
+bookingModel --> bookingsCtrl : booking
+deactivate bookingModel
+
+bookingsCtrl --> bookingsRouter : response (200 OK) booking
+deactivate bookingsCtrl
+
+bookingsRouter --> server : response
+deactivate bookingsRouter
+
+server --> client : response
+deactivate server
+
+@enduml

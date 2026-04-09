@@ -1,0 +1,58 @@
+@startuml
+title Sequence Diagram: Auth (Get Me)
+caption Get Current User (GET /me)
+
+skinparam shadowing false
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequence {
+  LifeLineBorderColor #6B6B6B
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6B6B6B
+  ParticipantBackgroundColor #CFE2F3
+  ActorBorderColor #6B6B6B
+  ArrowColor #6B6B6B
+}
+
+actor Client as client
+participant ":server" as server <<javaScript>>
+participant ":auth" as authRouter <<router>>
+participant ":protect" as protectMw <<middleware>>
+participant ":auth" as authCtrl <<controllers>>
+participant ":User" as userModel <<model>>
+database ":users" as usersDB <<MongoDB>>
+
+client -> server : req.get('/api/v1/auth/me')\nBearer token
+activate server
+
+server -> authRouter : app.use('/api/v1/auth', auth)
+activate authRouter
+
+authRouter -> protectMw : protect()
+activate protectMw
+protectMw -> protectMw : verify JWT
+protectMw --> authRouter : next()
+deactivate protectMw
+
+authRouter -> authCtrl : getMe()
+activate authCtrl
+
+authCtrl -> userModel : findById(req.user.id)
+activate userModel
+userModel -> usersDB : query by _id
+activate usersDB
+usersDB --> userModel : user
+deactivate usersDB
+userModel --> authCtrl : user
+deactivate userModel
+
+authCtrl --> authRouter : response (200 OK) user
+deactivate authCtrl
+
+authRouter --> server : response
+deactivate authRouter
+
+server --> client : response
+deactivate server
+
+@enduml

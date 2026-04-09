@@ -1,0 +1,51 @@
+@startuml
+title Sequence Diagram: Bookings (Get All)
+caption Get All Bookings (GET /bookings) - user own / admin any
+
+actor Client
+
+participant "«javaScript»\n:server" as Server
+participant "«router»\n:bookings" as RouterBookings
+participant "«middleware»\n:auth (protect)" as Protect
+participant "«controllers»\n:bookings" as BookingController
+participant "«model»\n:Booking" as BookingModel
+database "«MongoDB»\n:bookings" as MongoBookings
+
+Client -> Server : req.get("/api/v1/bookings")\nAuthorization: Bearer <token>
+activate Server
+
+Server -> RouterBookings : app.use("/api/v1/bookings", bookings)
+activate RouterBookings
+
+RouterBookings -> Protect : protect()
+activate Protect
+Protect -> Protect : read Bearer token\njwt.verify()\nreq.user = User.findById(decoded.id)
+Protect --> RouterBookings : next() (req.user set)
+deactivate Protect
+
+RouterBookings -> BookingController : getBookings()
+activate BookingController
+
+alt Admin role
+    BookingController -> BookingModel : find()
+    activate BookingModel
+    BookingModel -> MongoBookings : find all bookings
+    MongoBookings --> BookingModel : bookings[]
+    BookingModel --> BookingController : bookings[]
+    deactivate BookingModel
+else User role
+    BookingController -> BookingModel : find({ user: req.user.id })
+    activate BookingModel
+    BookingModel -> MongoBookings : find user bookings
+    MongoBookings --> BookingModel : bookings[]
+    BookingModel --> BookingController : bookings[]
+    deactivate BookingModel
+end
+
+BookingController --> Client : 200 OK\n{ success:true, count, data: bookings[] }
+
+deactivate BookingController
+deactivate RouterBookings
+deactivate Server
+
+@enduml

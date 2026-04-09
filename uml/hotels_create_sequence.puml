@@ -1,0 +1,65 @@
+@startuml
+title Sequence Diagram: Hotels (Create)
+caption Create Hotel (POST) - Admin only
+
+skinparam shadowing false
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequence {
+  LifeLineBorderColor #6B6B6B
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6B6B6B
+  ParticipantBackgroundColor #CFE2F3
+  ActorBorderColor #6B6B6B
+  ArrowColor #6B6B6B
+}
+
+actor Admin as admin
+participant ":server" as server <<javaScript>>
+participant ":hotels" as hotelsRouter <<router>>
+participant ":protect" as protectMw <<middleware>>
+participant ":authorize('admin')" as authzMw <<middleware>>
+participant ":hotels" as hotelsCtrl <<controllers>>
+participant ":Hotel" as hotelModel <<model>>
+database ":hotels" as hotelsDB <<MongoDB>>
+
+admin -> server : req.post('/api/v1/hotels')\nBearer token
+activate server
+
+server -> hotelsRouter : app.use('/api/v1/hotels', hotels)
+activate hotelsRouter
+
+hotelsRouter -> protectMw : protect()
+activate protectMw
+protectMw -> protectMw : verify JWT
+protectMw --> hotelsRouter : next()
+deactivate protectMw
+
+hotelsRouter -> authzMw : authorize('admin')
+activate authzMw
+authzMw -> authzMw : check role==admin
+authzMw --> hotelsRouter : next()
+deactivate authzMw
+
+hotelsRouter -> hotelsCtrl : createHotel()
+activate hotelsCtrl
+
+hotelsCtrl -> hotelModel : create(req.body)
+activate hotelModel
+hotelModel -> hotelsDB : HotelSchema.insert()
+activate hotelsDB
+hotelsDB --> hotelModel : hotel
+deactivate hotelsDB
+hotelModel --> hotelsCtrl : hotel
+deactivate hotelModel
+
+hotelsCtrl --> hotelsRouter : response (201 Created) hotel
+deactivate hotelsCtrl
+
+hotelsRouter --> server : response
+deactivate hotelsRouter
+
+server --> admin : response
+deactivate server
+
+@enduml

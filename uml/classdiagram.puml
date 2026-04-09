@@ -1,0 +1,117 @@
+@startuml
+title Hotel Booking System - REST API UML Profile
+
+' Styling to resemble the sample (clean boxes + dashed path lines)
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+}
+
+skinparam note {
+  BorderColor #444444
+}
+
+
+' APPLICATION
+class "HotelBookingService" <<Application>>
+
+' RESOURCES (Hotels)
+class "Hotels" <<Resource>> {
+  + <<GET>> getHotels() : Hotel[*]
+  + <<POST>> createHotel() : Hotel
+}
+
+class "Hotel" <<Resource>> {
+  + <<GET>> getHotel(id) : Hotel
+  + <<PUT>> updateHotel(id) : Hotel
+  + <<DELETE>> deleteHotel(id) : void
+}
+
+' Nested create booking (from your controller addBooking)
+class "HotelBookings" <<Resource>> {
+  + <<GET>> getBookings(hotelId) : Booking[*]
+  + <<POST>> addBooking(hotelId) : Booking
+}
+
+' RESOURCES (Bookings)
+class "Bookings" <<Resource>> {
+  + <<GET>> getBookings() : Booking[*]
+}
+
+class "Booking" <<Resource>> {
+  + <<GET>> getBooking(id) : Booking
+  + <<PUT>> updateBooking(id) : Booking
+  + <<DELETE>> deleteBooking(id) : void
+}
+
+
+' RESOURCES (Auth)
+class "Auth" <<Resource>> {
+  + <<POST>> register(name,tel,email,password,role) : Token
+  + <<POST>> login(email,password) : Token
+  + <<GET>> me() : User
+  + <<GET>> logout() : void
+}
+
+
+' REPRESENTATIONS (Models)
+class "Hotel" as HotelRep <<Representation>> {
+  - _id
+  - name
+  - address
+  - tel
+  - createdAt
+}
+
+class "Booking" as BookingRep <<Representation>> {
+  - _id
+  - bookingDate
+  - numberOfNights
+  - user
+  - hotel
+  - createdAt
+}
+
+class "User" as UserRep <<Representation>> {
+  - _id
+  - name
+  - tel
+  - email
+  - role
+  - password
+  - createdAt
+}
+
+class "Token" as TokenRep <<Representation>> {
+  - token
+}
+
+' PATH LINKS (dashed like the photo)
+HotelBookingService ..> Hotels : /api/v1/hotels\n<<Path>>
+Hotels ..> Hotel : /{id}\n<<Path>>
+
+HotelBookingService ..> Bookings : /api/v1/bookings\n<<Path>>
+Bookings ..> Booking : /{id}\n<<Path>>
+
+' Nested booking create endpoint in your code:
+HotelBookingService ..> HotelBookings : /api/v1/hotels/{hotelId}/bookings\n<<Path>>
+HotelBookings ..> Booking : /{id}\n<<Path>>
+
+HotelBookingService ..> Auth : /api/v1/auth\n<<Path>>
+
+' USE LINKS (resource uses representation)
+Hotels ..> HotelRep : <<use>>
+Hotel ..> HotelRep : <<use>>
+
+Bookings ..> BookingRep : <<use>>
+Booking ..> BookingRep : <<use>>
+HotelBookings ..> BookingRep : <<use>>
+
+Auth ..> UserRep : <<use>>
+Auth ..> TokenRep : <<use>>
+
+@enduml

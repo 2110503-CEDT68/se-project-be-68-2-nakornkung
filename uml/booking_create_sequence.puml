@@ -1,0 +1,63 @@
+@startuml
+title Sequence Diagram: Bookings (Create)
+caption Create Booking (POST /hotels/{hotelId}/bookings)
+
+actor Client
+
+participant "«javaScript»\n:server" as Server
+participant "«router»\n:hotels" as RouterHotels
+participant "«middleware»\n:auth (protect)" as Protect
+participant "«controllers»\n:bookings" as BookingController
+participant "«model»\n:Booking" as BookingModel
+participant "«model»\n:Hotel" as HotelModel
+database "«MongoDB»\n:bookings" as MongoBookings
+database "«MongoDB»\n:hotels" as MongoHotels
+
+Client -> Server : req.post("/api/v1/hotels/{hotelId}/bookings")\nAuthorization: Bearer <token>\nbody: { bookingDate, numberOfNights }
+activate Server
+
+Server -> RouterHotels : app.use("/api/v1/hotels", hotels)
+activate RouterHotels
+
+RouterHotels -> Protect : protect()
+activate Protect
+Protect -> Protect : read Bearer token\njwt.verify()\nreq.user = User.findById(decoded.id)
+Protect --> RouterHotels : next() (req.user set)
+deactivate Protect
+
+RouterHotels -> BookingController : addBooking()
+activate BookingController
+
+BookingController -> BookingController : req.body.hotel = req.params.hotelId\nreq.body.user = req.user.id
+
+BookingController -> BookingController : validate requestedNights <= 3\n(if not admin)
+
+BookingController -> BookingModel : find({ user: req.user.id })
+activate BookingModel
+BookingModel -> MongoBookings : find user bookings
+MongoBookings --> BookingModel : existedBookings[]
+BookingModel --> BookingController : existedBookings[]
+deactivate BookingModel
+
+BookingController -> BookingController : totalNights = sum(existedBookings.numberOfNights)\ncheck totalNights + requestedNights <= 3\n(if not admin)
+
+BookingController -> HotelModel : findById(hotelId)
+activate HotelModel
+HotelModel -> MongoHotels : findById
+MongoHotels --> HotelModel : hotel
+HotelModel --> BookingController : hotel
+deactivate HotelModel
+
+BookingController -> BookingModel : create(req.body)\n(bookingDate, numberOfNights, user, hotel)
+activate BookingModel
+BookingModel -> MongoBookings : insert booking (BookingSchema)
+MongoBookings --> BookingModel : booking
+BookingModel --> BookingController : booking
+deactivate BookingModel
+
+BookingController --> Client : 200 OK\n{ success:true, data: booking }
+deactivate BookingController
+deactivate RouterHotels
+deactivate Server
+
+@enduml

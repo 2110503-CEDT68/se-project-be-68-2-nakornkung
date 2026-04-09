@@ -1,0 +1,51 @@
+@startuml
+title Sequence Diagram: Hotels (Get All)
+caption Get All Hotels (GET)
+
+skinparam shadowing false
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequence {
+  LifeLineBorderColor #6B6B6B
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6B6B6B
+  ParticipantBackgroundColor #CFE2F3
+  ActorBorderColor #6B6B6B
+  ArrowColor #6B6B6B
+}
+
+actor Client as client
+participant ":server" as server <<javaScript>>
+participant ":hotels" as hotelsRouter <<router>>
+participant ":hotels" as hotelsCtrl <<controllers>>
+participant ":Hotel" as hotelModel <<model>>
+database ":hotels" as hotelsDB <<MongoDB>>
+
+client -> server : req.get('/api/v1/hotels')
+activate server
+
+server -> hotelsRouter : app.use('/api/v1/hotels', hotels)
+activate hotelsRouter
+
+hotelsRouter -> hotelsCtrl : getHotels()
+activate hotelsCtrl
+
+hotelsCtrl -> hotelModel : find()
+activate hotelModel
+hotelModel -> hotelsDB : query all
+activate hotelsDB
+hotelsDB --> hotelModel : hotels[]
+deactivate hotelsDB
+hotelModel --> hotelsCtrl : hotels[]
+deactivate hotelModel
+
+hotelsCtrl --> hotelsRouter : response (200 OK) hotels[]
+deactivate hotelsCtrl
+
+hotelsRouter --> server : response
+deactivate hotelsRouter
+
+server --> client : response
+deactivate server
+
+@enduml

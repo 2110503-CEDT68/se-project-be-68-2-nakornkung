@@ -1,0 +1,60 @@
+@startuml
+title Sequence Diagram: Bookings (Delete)
+caption Delete Booking (DELETE /bookings/:id) - user own / admin any
+
+skinparam shadowing false
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequence {
+  LifeLineBorderColor #6B6B6B
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6B6B6B
+  ParticipantBackgroundColor #CFE2F3
+  ActorBorderColor #6B6B6B
+  ArrowColor #6B6B6B
+}
+
+actor Client as client
+participant ":server" as server <<javaScript>>
+participant ":bookings" as bookingsRouter <<router>>
+participant ":protect" as protectMw <<middleware>>
+participant ":bookings" as bookingsCtrl <<controllers>>
+participant ":Booking" as bookingModel <<model>>
+database ":bookings" as bookingsDB <<MongoDB>>
+
+client -> server : req.delete('/api/v1/bookings/{id}')\nBearer token
+activate server
+
+server -> bookingsRouter : app.use('/api/v1/bookings', bookings)
+activate bookingsRouter
+
+bookingsRouter -> protectMw : protect()
+activate protectMw
+protectMw -> protectMw : verify JWT
+protectMw --> bookingsRouter : next()
+deactivate protectMw
+
+bookingsRouter -> bookingsCtrl : deleteBooking(id)
+activate bookingsCtrl
+
+bookingsCtrl -> bookingsCtrl : check ownership OR role==admin
+
+bookingsCtrl -> bookingModel : findByIdAndDelete(id)
+activate bookingModel
+bookingModel -> bookingsDB : delete by _id
+activate bookingsDB
+bookingsDB --> bookingModel : deleted
+deactivate bookingsDB
+bookingModel --> bookingsCtrl : ok
+deactivate bookingModel
+
+bookingsCtrl --> bookingsRouter : response (200/204) deleted
+deactivate bookingsCtrl
+
+bookingsRouter --> server : response
+deactivate bookingsRouter
+
+server --> client : response
+deactivate server
+
+@enduml

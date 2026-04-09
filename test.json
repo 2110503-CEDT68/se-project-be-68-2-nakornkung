@@ -1,0 +1,1421 @@
+{
+  "info": {
+    "_postman_id": "45dd4357-ad3f-43e2-a3e6-708b03767888",
+    "name": "HotelTest",
+    "description": "Hotel Booking System API Test Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48108267",
+    "_collection_link": "https://go.postman.co/collection/48108267-45dd4357-ad3f-43e2-a3e6-708b03767888?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Register user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "",
+                  "pm.test(\"Token exists\", function () {",
+                  "  pm.expect(res.token).to.exist;",
+                  "});",
+                  "",
+                  "pm.environment.set(\"TOKEN\", res.token);",
+                  "pm.collectionVariables.set(\"TOKEN\", res.token);",
+                  "",
+                  "// Decode JWT to extract user id",
+                  "const tokenParts = res.token.split('.');",
+                  "const payload = JSON.parse(atob(tokenParts[1]));",
+                  "",
+                  "pm.test(\"User ID exists in token\", function () {",
+                  "  pm.expect(payload.id).to.exist;",
+                  "});",
+                  "",
+                  "// Save user_id",
+                  "pm.environment.set(\"user_id\", payload.id);",
+                  "pm.collectionVariables.set(\"user_id\", payload.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{$randomFullName}}\",\n  \"tel\": \"{{$randomPhoneNumber}}\",\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"password\",\n  \"role\": \"user\"\n}\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "",
+                  "pm.test(\"Token exists\", function () {",
+                  "  pm.expect(res.token).to.exist;",
+                  "});",
+                  "",
+                  "pm.environment.set(\"TOKEN\", res.token);",
+                  "pm.collectionVariables.set(\"TOKEN\", res.token);",
+                  "",
+                  "// Decode JWT to extract user id",
+                  "const tokenParts = res.token.split('.');",
+                  "const payload = JSON.parse(atob(tokenParts[1]));",
+                  "",
+                  "pm.test(\"User ID exists in token\", function () {",
+                  "  pm.expect(payload.id).to.exist;",
+                  "});",
+                  "",
+                  "// Save user_id",
+                  "pm.environment.set(\"user_id\", payload.id);",
+                  "pm.collectionVariables.set(\"user_id\", payload.id);",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Hotels",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const body = pm.response.json();\r",
+                  "\r",
+                  "console.log(body);\r",
+                  "\r",
+                  "pm.test(\"There are some hotels!!\", () => {\r",
+                  "    pm.expect(body.count).to.be.above(0);\r",
+                  "})\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"hotel_id\", body.data[0]._id)"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/hotels",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hotels"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Hotel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/hotels/{{hotel_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hotels",
+                "{{hotel_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 or 200\", function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "",
+                  "pm.test(\"success is true\", function () {",
+                  "    pm.expect(res.success).to.eql(true);",
+                  "});",
+                  "",
+                  "pm.test(\"data exists\", function () {",
+                  "    pm.expect(res.data).to.exist;",
+                  "});",
+                  "",
+                  "// Save booking_id for Update/Delete",
+                  "if (res.data && res.data._id) {",
+                  "    pm.environment.set(\"booking_id\", res.data._id);",
+                  "    pm.collectionVariables.set(\"booking_id\", res.data._id);",
+                  "}",
+                  "",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": \"{{user_id}}\",\n  \"bookingDate\": \"{{$randomDateRecent}}\",\n  \"numberOfNights\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/hotels/{{hotel_id}}/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hotels",
+                "{{hotel_id}}",
+                "bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add WRONG Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(400);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "",
+                  "pm.test(\"success is false\", function () {",
+                  "    pm.expect(res.success).to.eql(false);",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": \"{{user_id}}\",\n  \"bookingDate\": \"{{$randomDateRecent}}\",\n  \"numberOfNights\": 7\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/hotels/{{hotel_id}}/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hotels",
+                "{{hotel_id}}",
+                "bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get ONE Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "bookings",
+                "{{booking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+                  "\r",
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"success is true\", () => pm.expect(res.success).to.eql(true));\r",
+                  "pm.test(\"data exists\", () => pm.expect(res.data).to.be.an(\"object\"));\r",
+                  "\r",
+                  "// Optional: confirm updated fields (adjust to your body fields)\r",
+                  "if (pm.environment.get(\"booking_id\")) {\r",
+                  "  const id = res.data._id || res.data.id;\r",
+                  "  pm.test(\"updated booking id matches booking_id\", () => {\r",
+                  "    if (id) pm.expect(String(id)).to.eql(String(pm.environment.get(\"booking_id\")));\r",
+                  "  });\r",
+                  "}\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numberOfNights\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "bookings",
+                "{{booking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 204\", () => {\r",
+                  "  pm.expect([200, 204]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "// If JSON body exists, validate success\r",
+                  "if (pm.response.code !== 204) {\r",
+                  "  const res = pm.response.json();\r",
+                  "  if (typeof res.success !== \"undefined\") {\r",
+                  "    pm.test(\"success is true\", () => pm.expect(res.success).to.eql(true));\r",
+                  "  }\r",
+                  "}\r",
+                  "\r",
+                  "// Remove booking_id from env after delete\r",
+                  "pm.environment.unset(\"booking_id\");\r",
+                  "pm.test(\"booking_id cleared\", () => pm.expect(pm.environment.get(\"booking_id\")).to.not.exist);\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "bookings",
+                "{{booking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.environment.set(\"TOKEN\",null);\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// pm.execution.setNextRequest(null);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "",
+                  "pm.test(\"Token exists\", function () {",
+                  "  pm.expect(res.token).to.exist;",
+                  "});",
+                  "",
+                  "pm.environment.set(\"TOKEN\", res.token);",
+                  "pm.collectionVariables.set(\"TOKEN\", res.token);",
+                  "",
+                  "// Decode JWT to extract user id",
+                  "const tokenParts = res.token.split('.');",
+                  "const payload = JSON.parse(atob(tokenParts[1]));",
+                  "",
+                  "pm.test(\"User ID exists in token\", function () {",
+                  "  pm.expect(payload.id).to.exist;",
+                  "});",
+                  "",
+                  "// Save user_id",
+                  "pm.environment.set(\"user_id\", payload.id);",
+                  "pm.collectionVariables.set(\"user_id\", payload.id);",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 or 200\", function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "",
+                  "pm.test(\"success is true\", function () {",
+                  "    pm.expect(res.success).to.eql(true);",
+                  "});",
+                  "",
+                  "pm.test(\"data exists\", function () {",
+                  "    pm.expect(res.data).to.exist;",
+                  "});",
+                  "",
+                  "// Save booking_id for Update/Delete",
+                  "if (res.data && res.data._id) {",
+                  "    pm.environment.set(\"booking_id\", res.data._id);",
+                  "    pm.collectionVariables.set(\"booking_id_id\", res.data._id);",
+                  "}",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": \"{{user_id}}\",\n  \"bookingDate\": \"{{$randomDateRecent}}\",\n  \"numberOfNights\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/hotels/{{hotel_id}}/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hotels",
+                "{{hotel_id}}",
+                "bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+                  "\r",
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"success is true\", () => pm.expect(res.success).to.eql(true));\r",
+                  "pm.test(\"data is an array\", () => pm.expect(res.data).to.be.an(\"array\"));\r",
+                  "\r",
+                  "// Optional: if array not empty, check first item shape\r",
+                  "if (res.data.length > 0) {\r",
+                  "  const b = res.data[0];\r",
+                  "  pm.test(\"booking has id fields\", () => {\r",
+                  "    pm.expect(b).to.have.property(\"_id\");\r",
+                  "    pm.expect(b._id).to.match(/^[a-f0-9]{24}$/);\r",
+                  "  });\r",
+                  "}\r",
+                  "\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+                  "\r",
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"success is true\", () => pm.expect(res.success).to.eql(true));\r",
+                  "pm.test(\"data exists\", () => pm.expect(res.data).to.be.an(\"object\"));\r",
+                  "\r",
+                  "// Optional: confirm updated fields (adjust to your body fields)\r",
+                  "if (pm.environment.get(\"booking_id\")) {\r",
+                  "  const id = res.data._id || res.data.id;\r",
+                  "  pm.test(\"updated booking id matches booking_id\", () => {\r",
+                  "    if (id) pm.expect(String(id)).to.eql(String(pm.environment.get(\"booking_id\")));\r",
+                  "  });\r",
+                  "}\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numberOfNights\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "bookings",
+                "{{booking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 204\", () => {\r",
+                  "  pm.expect([200, 204]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "// If JSON body exists, validate success\r",
+                  "if (pm.response.code !== 204) {\r",
+                  "  const res = pm.response.json();\r",
+                  "  if (typeof res.success !== \"undefined\") {\r",
+                  "    pm.test(\"success is true\", () => pm.expect(res.success).to.eql(true));\r",
+                  "  }\r",
+                  "}\r",
+                  "\r",
+                  "// Remove booking_id from env after delete\r",
+                  "pm.environment.unset(\"booking_id\");\r",
+                  "pm.test(\"booking_id cleared\", () => pm.expect(pm.environment.get(\"booking_id\")).to.not.exist);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "bookings",
+                "{{booking_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "extra",
+      "item": [
+        {
+          "name": "hotels",
+          "item": [
+            {
+              "name": "Get hotels Pagination",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "const res = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"success true\", () => pm.expect(res.success).to.eql(true));\r",
+                      "pm.test(\"data array\", () => pm.expect(res.data).to.be.an(\"array\"));\r",
+                      "pm.test(\"count == data.length\", () => pm.expect(res.count).to.eql(res.data.length));\r",
+                      "\r",
+                      "pm.test(\"limit respected\", () => {\r",
+                      "  const limit = parseInt(pm.request.url.query.get(\"limit\") || \"25\", 10);\r",
+                      "  pm.expect(res.data.length).to.be.at.most(limit);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"total exists and >= count\", () => {\r",
+                      "  pm.expect(res.total).to.be.a(\"number\");\r",
+                      "  pm.expect(res.total).to.be.at.least(res.count);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"pagination object shape\", () => {\r",
+                      "  pm.expect(res.pagination).to.be.an(\"object\");\r",
+                      "  if (res.pagination.next) pm.expect(res.pagination.next).to.have.keys([\"page\",\"limit\"]);\r",
+                      "  if (res.pagination.prev) pm.expect(res.pagination.prev).to.have.keys([\"page\",\"limit\"]);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/hotels?page=1&limit=5",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "hotels"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get hotels Sort",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "const res = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"sorted by createdAt desc\", () => {\r",
+                      "  if (res.data.length < 2) return;\r",
+                      "\r",
+                      "  for (let i = 0; i < res.data.length - 1; i++) {\r",
+                      "    const a = new Date(res.data[i].createdAt).getTime();\r",
+                      "    const b = new Date(res.data[i + 1].createdAt).getTime();\r",
+                      "    pm.expect(a).to.be.at.least(b);\r",
+                      "  }\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/hotels?sort=-createdAt&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "hotels"
+                  ],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "-createdAt"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get hotels Filter",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "\r",
+                      "const res = pm.response.json();\r",
+                      "pm.test(\"success + structure\", () => {\r",
+                      "  pm.expect(res.success).to.eql(true);\r",
+                      "  pm.expect(res.data).to.be.an(\"array\");\r",
+                      "  pm.expect(res.count).to.eql(res.data.length);\r",
+                      "  pm.expect(res.total).to.be.a(\"number\");\r",
+                      "  pm.expect(res.total).to.be.at.least(res.count);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"limit respected\", () => {\r",
+                      "  const limit = parseInt(pm.request.url.query.get(\"limit\") || \"25\", 10);\r",
+                      "  pm.expect(res.data.length).to.be.at.most(limit);\r",
+                      "});\r",
+                      "\r",
+                      "//decode query\r",
+                      "const q = (k) => {\r",
+                      "  const v = pm.request.url.query.get(k);\r",
+                      "  return v ? decodeURIComponent(v).trim().toLowerCase() : null;\r",
+                      "};\r",
+                      "\r",
+                      "const province = q(\"province\");\r",
+                      "const district = q(\"district\");\r",
+                      "const name = q(\"name\");\r",
+                      "\r",
+                      "const norm = (v) => String(v ?? \"\").trim().toLowerCase();\r",
+                      "\r",
+                      "pm.test(\"filters respected (if provided)\", () => {\r",
+                      "  if (!res.data.length) return; // nothing to assert per-item\r",
+                      "\r",
+                      "  res.data.forEach(h => {\r",
+                      "    if (province) pm.expect(norm(h.province)).to.include(province);\r",
+                      "    if (district) pm.expect(norm(h.district)).to.include(district);\r",
+                      "    if (name) pm.expect(norm(h.name)).to.include(name);\r",
+                      "  });\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/hotels?province=กรุงเทพ&district=ลาดพร้าว&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "hotels"
+                  ],
+                  "query": [
+                    {
+                      "key": "province",
+                      "value": "กรุงเทพ"
+                    },
+                    {
+                      "key": "district",
+                      "value": "ลาดพร้าว"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "bookings",
+          "item": [
+            {
+              "name": "Get bookings Pagination",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "const res = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"success true\", () => pm.expect(res.success).to.eql(true));\r",
+                      "pm.test(\"data array\", () => pm.expect(res.data).to.be.an(\"array\"));\r",
+                      "pm.test(\"count == data.length\", () => pm.expect(res.count).to.eql(res.data.length));\r",
+                      "\r",
+                      "pm.test(\"limit respected\", () => {\r",
+                      "  const limit = parseInt(pm.request.url.query.get(\"limit\") || \"25\", 10);\r",
+                      "  pm.expect(res.data.length).to.be.at.most(limit);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"total exists and >= count\", () => {\r",
+                      "  pm.expect(res.total).to.be.a(\"number\");\r",
+                      "  pm.expect(res.total).to.be.at.least(res.count);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"pagination object shape\", () => {\r",
+                      "  pm.expect(res.pagination).to.be.an(\"object\");\r",
+                      "  if (res.pagination.next) pm.expect(res.pagination.next).to.have.keys([\"page\",\"limit\"]);\r",
+                      "  if (res.pagination.prev) pm.expect(res.pagination.prev).to.have.keys([\"page\",\"limit\"]);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"hotel populated (has name)\", () => {\r",
+                      "  if (res.data.length === 0) return;\r",
+                      "  pm.expect(res.data[0]).to.have.property(\"hotel\");\r",
+                      "  pm.expect(res.data[0].hotel).to.be.an(\"object\");\r",
+                      "  pm.expect(res.data[0].hotel).to.have.property(\"name\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/bookings?page=1&limit=5&sort=-createdAt",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "bookings"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "-createdAt"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get bookings Sort",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "const res = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"sorted by createdAt desc\", () => {\r",
+                      "  if (res.data.length < 2) return;\r",
+                      "\r",
+                      "  for (let i = 0; i < res.data.length - 1; i++) {\r",
+                      "    const a = new Date(res.data[i].createdAt).getTime();\r",
+                      "    const b = new Date(res.data[i + 1].createdAt).getTime();\r",
+                      "    pm.expect(a).to.be.at.least(b);\r",
+                      "  }\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/bookings?sort=-createdAt&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "bookings"
+                  ],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "-createdAt"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get bookings Filter date",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "const res = pm.response.json();\r",
+                      "\r",
+                      "const gte = pm.request.url.query.get(\"bookingDate[gte]\");\r",
+                      "const lte = pm.request.url.query.get(\"bookingDate[lte]\");\r",
+                      "\r",
+                      "pm.test(\"bookingDate gte/lte respected\", () => {\r",
+                      "  res.data.forEach(b => {\r",
+                      "    const t = new Date(b.bookingDate).getTime();\r",
+                      "    if (gte) pm.expect(t).to.be.at.least(new Date(gte).getTime());\r",
+                      "    if (lte) pm.expect(t).to.be.at.most(new Date(lte).getTime());\r",
+                      "  });\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/bookings?bookingDate[gte]=2026-01-01&bookingDate[lte]=2026-12-31&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "bookings"
+                  ],
+                  "query": [
+                    {
+                      "key": "bookingDate[gte]",
+                      "value": "2026-01-01"
+                    },
+                    {
+                      "key": "bookingDate[lte]",
+                      "value": "2026-12-31"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get booking Filter hotel_id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "const res = pm.response.json();\r",
+                      "\r",
+                      "const hotelId = pm.request.url.query.get(\"hotel\");\r",
+                      "pm.test(\"filter hotel respected\", () => {\r",
+                      "  if (!hotelId) return;\r",
+                      "\r",
+                      "  res.data.forEach(b => {\r",
+                      "    // if populated, hotel is object with _id; otherwise string\r",
+                      "    const hid = (b.hotel && b.hotel._id) ? b.hotel._id : b.hotel;\r",
+                      "    pm.expect(String(hid)).to.eql(String(hotelId));\r",
+                      "  });\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/bookings?hotel={{hotel_id}}&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "bookings"
+                  ],
+                  "query": [
+                    {
+                      "key": "hotel",
+                      "value": "{{hotel_id}}"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get booking Filter user_id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+                      "const res = pm.response.json();\r",
+                      "\r",
+                      "const userId = pm.request.url.query.get(\"user\");\r",
+                      "pm.test(\"admin user filter respected (if user param provided)\", () => {\r",
+                      "  if (!userId) return;\r",
+                      "\r",
+                      "  res.data.forEach(b => {\r",
+                      "    const uid = (b.user && b.user._id) ? b.user._id : b.user; // usually b.user is id string\r",
+                      "    pm.expect(String(uid)).to.eql(String(userId));\r",
+                      "  });\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/bookings?user={{user_id}}&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "bookings"
+                  ],
+                  "query": [
+                    {
+                      "key": "user",
+                      "value": "{{user_id}}"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "description": "- add pagination + limit\n    \n- add filter + sort"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "TOKEN",
+      "value": ""
+    },
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "hotel_id",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "booking_id",
+      "value": ""
+    },
+    {
+      "key": "_id",
+      "value": ""
+    }
+  ]
+}

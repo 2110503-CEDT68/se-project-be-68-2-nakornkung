@@ -1,0 +1,41 @@
+@startuml
+title Sequence Diagram: Auth (Logout)
+caption Auth Logout (GET)
+
+skinparam shadowing false
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequence {
+  LifeLineBorderColor #6B6B6B
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6B6B6B
+  ParticipantBackgroundColor #CFE2F3
+  ActorBorderColor #6B6B6B
+  ArrowColor #6B6B6B
+}
+
+actor Client as client
+participant ":server" as server <<javaScript>>
+participant ":auth" as authRouter <<router>>
+participant ":auth" as authCtrl <<controllers>>
+
+client -> server : req.get('/api/v1/auth/logout')
+activate server
+
+server -> authRouter : app.use('/api/v1/auth', auth)
+activate authRouter
+
+authRouter -> authCtrl : logout()
+activate authCtrl
+
+authCtrl -> authCtrl : clear cookie token
+authCtrl --> authRouter : response (200 OK)\nlogged out
+deactivate authCtrl
+
+authRouter --> server : response
+deactivate authRouter
+
+server --> client : response
+deactivate server
+
+@enduml

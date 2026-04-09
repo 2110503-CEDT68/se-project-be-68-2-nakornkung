@@ -1,0 +1,53 @@
+@startuml
+title Sequence Diagram: Auth (Login)
+caption Auth Login (POST)
+
+skinparam shadowing false
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequence {
+  LifeLineBorderColor #6B6B6B
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #6B6B6B
+  ParticipantBackgroundColor #CFE2F3
+  ActorBorderColor #6B6B6B
+  ArrowColor #6B6B6B
+}
+
+actor Client as client
+participant ":server" as server <<javaScript>>
+participant ":auth" as authRouter <<router>>
+participant ":auth" as authCtrl <<controllers>>
+participant ":User" as userModel <<model>>
+database ":users" as usersDB <<MongoDB>>
+
+client -> server : req.post('/api/v1/auth/login')
+activate server
+
+server -> authRouter : app.use('/api/v1/auth', auth)
+activate authRouter
+
+authRouter -> authCtrl : login()
+activate authCtrl
+
+authCtrl -> userModel : findOne(email)
+activate userModel
+userModel -> usersDB : query by email
+activate usersDB
+usersDB --> userModel : user
+deactivate usersDB
+userModel --> authCtrl : user
+deactivate userModel
+
+authCtrl -> authCtrl : comparePassword()\nauthenticate
+authCtrl -> authCtrl : sendTokenResponse()
+authCtrl --> authRouter : response (200 OK)\nJWT token in cookie/body
+deactivate authCtrl
+
+authRouter --> server : response
+deactivate authRouter
+
+server --> client : response
+deactivate server
+
+@enduml
