@@ -100,6 +100,32 @@ exports.getTransportation = async (req, res, next) => {
 // @desc    Create new transportation
 // @route   POST /api/v1/transportations
 // @access  Private/Admin
+exports.createTransportation = async (req, res, next) => {
+  try {
+    const transportationData = {
+      name: req.body.name,
+      description: req.body.description,
+      type: req.body.type,
+      providerName: req.body.providerName,
+      pickUpArea: req.body.pickUpArea,
+      dropOffArea: req.body.dropOffArea,
+      price: req.body.price,
+      img: req.body.img,
+    };
+
+    const transportation = await Transportation.create(transportationData);
+
+    res.status(201).json({
+      success: true,
+      data: transportation
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
 
 // @desc    Update transportation
 // @route   PUT /api/v1/transportations/:id
