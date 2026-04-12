@@ -77,6 +77,25 @@ exports.getTransportations = async (req, res, next) => {
 // @desc    Get single transportation
 // @route   GET /api/v1/transportations/:id
 // @access  Public
+exports.getTransportation = async (req, res, next) => {
+  try {
+    const transportation = await Transportation.findById(req.params.id);
+
+    if (!transportation) {
+      return res.status(404).json({
+        success: false,
+        message: `Transportation not found with id of ${req.params.id}`
+      });
+    }
+
+    res.status(200).json({ success: true, data: transportation });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 // @desc    Create new transportation
 // @route   POST /api/v1/transportations
