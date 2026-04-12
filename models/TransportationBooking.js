@@ -39,11 +39,11 @@ const TransportationBookingSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    // booking: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Booking',
-    //     required: true
-    // },
+    booking: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking',
+        required: true
+    },
     transportation: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Transportation',
@@ -61,19 +61,14 @@ const TransportationBookingSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    // passengerNumber: {
-    //     type: Number,
-    //     required: true,
-    //     min: [1, 'Passenger number must be at least 1']
-    // },
+    passengerNumber: {
+        type: Number,
+        required: true,
+        min: [1, 'Passenger number must be at least 1']
+    },
     returnDateTime: {
         type: Date,
     },
-    // status: {
-    //     type: String,
-    //     enum: [pending , confirmed , cancelled],
-    //     default: 'pending'
-    // }
     bookingDate: {
         type: Date,
         default: Date.now
