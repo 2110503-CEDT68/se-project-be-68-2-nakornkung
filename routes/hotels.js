@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 const { getHotels, getHotel, createHotel, updateHotel, deleteHotel } = require('../controllers/hotels');
 const bookingRouter = require('./bookings');
 const router = express.Router();
