@@ -1,16 +1,6 @@
 const express = require('express');
-
-const {
-  getBookings,
-  getBooking,
-  addBooking,
-  updateBooking,
-  deleteBooking
-} = require('../controllers/bookings');
-
-//mergeParams = allows this router to see params from parent route
-const router = express.Router({ mergeParams: true });
-
+const {getBookings , getBooking , addBooking , updateBooking , deleteBooking} = require('../controllers/bookings');
+const router = express.Router({ mergeParams: true }); //mergeParams = allows this router to see params from parent route
 const { protect, authorize } = require('../middleware/auth');
 
 router.route('/')

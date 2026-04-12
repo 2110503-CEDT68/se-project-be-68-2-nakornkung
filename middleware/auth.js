@@ -1,8 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 // Protect routes
 exports.protect = async (req, res, next) => {

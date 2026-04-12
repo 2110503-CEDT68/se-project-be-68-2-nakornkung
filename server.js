@@ -23,7 +23,9 @@ const app = express();
 const hotels = require('./routes/hotels')
 const auth = require('./routes/auth');
 const bookings = require('./routes/bookings');
-const transportations = require('./routes/transportations');
+
+const transportations = require('./routes/transportations')
+const transportationBookings = require('./routes/transportationBookings')
 
 //Query Parser
 app.set('query parser', 'extended');
@@ -38,6 +40,8 @@ app.use('/api/v1/hotels', hotels);
 app.use('/api/v1/transportations', transportations);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/bookings', bookings);
+app.use('/api/v1/transportations',transportations);
+app.use('/api/v1/transportationBookings',transportationBookings);
 
 const PORT = process.env.PORT || 5000;
 

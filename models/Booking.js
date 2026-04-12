@@ -9,6 +9,10 @@ const BookingSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Please specify check-out date']
   },
+  transportation: [{
+    type: mongoose.Schema.ObjectId,
+    ref: 'TransportationBooking'
+  }],
   numberOfNights: {
     type: Number,
     min: 1,
