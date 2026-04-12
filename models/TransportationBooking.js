@@ -50,7 +50,33 @@ const TransportationBookingSchema = new mongoose.Schema({
         required: true
     },
     pickupLocation: {
-        type: 
+        type: locationSchema,
+        required: true
+    },
+    dropOffLocation: {
+        type: locationSchema,
+        required: true
+    },
+    departureDateTime: {
+        type: Date,
+        required: true
+    },
+    // passengerNumber: {
+    //     type: Number,
+    //     required: true,
+    //     min: [1, 'Passenger number must be at least 1']
+    // },
+    returnDateTime: {
+        type: Date,
+    },
+    // status: {
+    //     type: String,
+    //     enum: [pending , confirmed , cancelled],
+    //     default: 'pending'
+    // }
+    bookingDate: {
+        type: Date,
+        default: Date.now
     }
 });
 
