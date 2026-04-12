@@ -23,6 +23,7 @@ const app = express();
 const hotels = require('./routes/hotels')
 const auth = require('./routes/auth');
 const bookings = require('./routes/bookings');
+const transportations = require('./routes/transportations')
 
 //Query Parser
 app.set('query parser', 'extended');
