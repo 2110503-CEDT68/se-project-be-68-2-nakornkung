@@ -1,10 +1,11 @@
 const express = require('express');
-const transportationBookingRouter = require('./transportationBookings');
-const router = express.Router();
-const { getTransportations, getTransportation, createTransportation, updateTransportation, deleteTransportation } = require('../controllers/transportations');
 const { protect, authorize } = require('../middleware/auth');
+const transportationBookingRouter = require('./transportationBookings');
+const { getTransportations, getTransportation, createTransportation, updateTransportation, deleteTransportation } = require('../controllers/transportations');
 
-router.use('/:transportationId/transportationBookings',transportationBookingRouter);
+const router = express.Router();
+
+router.use('/:transportationId/transportationBookings', transportationBookingRouter);
 
 router.route('/')
   .get(protect, getTransportations)
