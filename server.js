@@ -37,7 +37,6 @@ app.use(cors());
 
 //Mount routers
 app.use('/api/v1/hotels', hotels);
-app.use('/api/v1/transportations', transportations);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/bookings', bookings);
 app.use('/api/v1/transportations',transportations);
