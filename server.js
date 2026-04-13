@@ -9,7 +9,7 @@ const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
 
 //load env
-dotenv.config({ path: './config/config.env' })
+dotenv.config()
 
 //connect db
 connectDB().catch(err => {
