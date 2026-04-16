@@ -206,7 +206,7 @@ exports.addBooking = async (req, res, next) => {
         success: false,
         message: `No hotel with the id of ${req.params.hotelId}`
       });
-    } 
+    }
 
     req.body.numberOfNights = requestedNights;
 
