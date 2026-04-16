@@ -93,14 +93,14 @@ exports.getBookings = async (req, res, next) => {
 exports.getBooking = async (req, res, next) => {
   try {
     const booking = await Booking.findById(req.params.id).populate(
-      {
+      [{
         path: 'hotel',
         select: 'name address tel'
       }, 
       {
         path: 'transportation',
         select: 'transportation departureDateTime passengerNumber'
-      }
+      }]
     );
 
     if (!booking) {
