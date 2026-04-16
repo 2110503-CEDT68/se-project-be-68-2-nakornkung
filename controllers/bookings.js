@@ -92,10 +92,16 @@ exports.getBookings = async (req, res, next) => {
 //@access   Private
 exports.getBooking = async (req, res, next) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate({
-      path: 'hotel',
-      select: 'name address tel'
-    });
+    const booking = await Booking.findById(req.params.id).populate(
+      {
+        path: 'hotel',
+        select: 'name address tel'
+      }, 
+      {
+        path: 'transportation',
+        select: 'transportation departureDateTime passengerNumber'
+      }
+    );
 
     if (!booking) {
       return res.status(404).json({
