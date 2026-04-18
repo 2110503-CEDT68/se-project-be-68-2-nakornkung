@@ -31,13 +31,24 @@ exports.getBookings = async (req, res, next) => {
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,
     match => `$${match}`);
 
-  query = Booking.find(JSON.parse(queryStr)).populate({
-    path: 'hotel',
-    select: 'name address district province postalcode tel img'
-  }).populate({
-    path: 'user',
-    select: 'name email tel role',
-  });
+  query = Booking.find(JSON.parse(queryStr)).populate(
+      [{
+      path: 'user',
+      select: 'name email tel role',
+      },
+      {
+        path: 'hotel',
+        select: 'name address district province postalcode tel img'
+      }, 
+      {
+        path: 'transportation',
+        select: 'departureDateTime passengerNumber',
+        populate: {
+          path: 'transportation',
+          select: 'name description type providerName pickUpArea dropOffArea price img'
+        }
+      }]
+  ) ;
 
   if (req.query.select) {
     const fields = req.query.select.split(',').join(' ');
@@ -92,10 +103,20 @@ exports.getBookings = async (req, res, next) => {
 //@access   Private
 exports.getBooking = async (req, res, next) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate({
-      path: 'hotel',
-      select: 'name address tel'
-    });
+    const booking = await Booking.findById(req.params.id).populate(
+      [{
+        path: 'hotel',
+        select: 'name address tel'
+      }, 
+      {
+        path: 'transportation',
+        select: 'departureDateTime passengerNumber',
+        populate: {
+          path: 'transportation',
+          select: 'name description type providerName pickUpArea dropOffArea price img'
+        }
+      }]
+    );
 
     if (!booking) {
       return res.status(404).json({
@@ -206,7 +227,7 @@ exports.addBooking = async (req, res, next) => {
         success: false,
         message: `No hotel with the id of ${req.params.hotelId}`
       });
-    } 
+    }
 
     req.body.numberOfNights = requestedNights;
 
