@@ -7,26 +7,35 @@ const TransportationBooking = require('../models/TransportationBooking');
 exports.getTransportations = async (req, res, next) => {
   try {
     let query;
-
+ 
     const reqQuery = { ...req.query };
-    const removeFields = ['select', 'sort', 'page', 'limit'];
+    const removeFields = ['select', 'sort', 'page', 'limit', 'province'];
     const searchableFields = ['name', 'type', 'providerName'];
-
+ 
     removeFields.forEach(param => delete reqQuery[param]);
-
+ 
     searchableFields.forEach((field) => {
       if (typeof reqQuery[field] === 'string' && reqQuery[field].trim()) {
         reqQuery[field] = { $regex: reqQuery[field].trim(), $options: 'i' };
       }
     });
-
+ 
     let queryStr = JSON.stringify(reqQuery);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,
       match => `$${match}`);
     const filters = JSON.parse(queryStr);
-
+ 
+    // Handle province filter for pickUpArea and dropOffArea
+    if (req.query.province && req.query.province.trim()) {
+      const provinceRegex = { $regex: req.query.province.trim(), $options: 'i' };
+      filters.$or = [
+        { 'pickUpArea.location.province': provinceRegex },
+        { 'dropOffArea.location.province': provinceRegex }
+      ];
+    }
+ 
     query = Transportation.find(filters);
-
+ 
     if (req.query.select) {
       const fields = req.query.select.split(',').join(' ');
       query = query.select(fields);
@@ -38,27 +47,27 @@ exports.getTransportations = async (req, res, next) => {
     else {
       query = query.sort('-createAt');
     }
-
+ 
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 25;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const total = await Transportation.countDocuments(filters);
-
+ 
     query = query.skip(startIndex).limit(limit);
-
+ 
     const transportations = await query;
-
+ 
     const pagination = {};
-
+ 
     if (endIndex < total) {
       pagination.next = { page: page + 1, limit }
     }
-
+ 
     if (startIndex > 0) {
       pagination.prev = { page: page - 1, limit }
     }
-
+ 
     res.status(200).json({
       success: true,
       count: transportations.length,

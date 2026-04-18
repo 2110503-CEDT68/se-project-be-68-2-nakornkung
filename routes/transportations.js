@@ -8,7 +8,7 @@ const router = express.Router();
 router.use('/:transportationId/transportationBookings', transportationBookingRouter);
 
 router.route('/')
-  .get(protect, getTransportations)
+  .get(getTransportations)
   .post(protect, authorize('admin'), createTransportation);
 router.route('/:id')
   .get(protect, getTransportation)
