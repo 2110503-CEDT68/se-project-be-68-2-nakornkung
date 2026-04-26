@@ -97,22 +97,28 @@ exports.getHotel = async (req, res, next) => {
   }
 };
 
+//use in create and update ah function
+const buildHotelPayload = (body) => {
+  const payload = {
+    name: body.name,
+    attraction: body.attraction,
+    address: body.address,
+    tel: body.tel,
+    district: body.district,
+    province: body.province,
+    postalcode: body.postalcode,
+    img: body.img
+  };
+
+  return payload;
+};
 
 // @desc    Create new hotel
 // @route   POST /api/v1/hotels
 // @access  Private/Admin
 exports.createHotel = async (req, res, next) => {
   try {
-    const hotelData = {
-      name: req.body.name,
-      address: req.body.address,
-      tel: req.body.tel,
-      district: req.body.district,
-      province: req.body.province,
-      postalcode: req.body.postalcode,
-      img: req.body.img,
-    };
-
+    const hotelData = buildHotelPayload(req.body);
     const hotel = await Hotel.create(hotelData);
 
     res.status(201).json({
