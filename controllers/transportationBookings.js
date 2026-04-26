@@ -123,15 +123,26 @@ exports.updateTransportationBooking = async (req, res, next) => {
 exports.deleteTransportationBooking = async (req, res, next) => {
     try {
         const transportationBooking = await TransportationBooking.findById(req.params.id);
-
+        console.log(req.params.id) ;
         if (!transportationBooking) {
             return res.status(404).json({ success: false, message: `No booking with the id of ${req.params.id}` });
         }
 
         if (transportationBooking.user.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({ success: false, message: `User ${req.user.id} is not authorized to update this booking` });
+            return res.status(401).json({ success: false, message: `User ${req.user.id} is not authorized to delete this booking` });
         }
-
+        
+        //delete transportationBookingId from booking
+        await Booking.findByIdAndUpdate(
+            transportationBooking.booking,
+            {
+                $pull : { transportation: transportationBooking._id }
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
         await transportationBooking.deleteOne();
         res.status(200).json({ success: true, data: {} });
     } catch (err) {
