@@ -52,23 +52,6 @@ const AttractionSchema = new mongoose.Schema({
         type: AddressSchema,
         required: true
     },
-    location: {
-        type: {
-            type: String,
-            enum: ['Point'],
-            default: 'Point'
-        },
-        coordinates: {
-            type: [Number], // [longitude, latitude]
-            required: true,
-            validate: {
-                validator: function(v) {
-                    return v && v.length === 2;
-                },
-                message: 'Coordinates must be [longitude, latitude]'
-            }
-        }
-    },
     openingHours: {
         monday: OpeningHourSchema,
         tuesday: OpeningHourSchema,
