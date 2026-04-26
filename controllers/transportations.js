@@ -1,41 +1,53 @@
 const Transportation = require('../models/Transportation');
 const TransportationBooking = require('../models/TransportationBooking');
 
-// @desc    Get all transportations
-// @route   GET /api/v1/transportations
-// @access  Public
 exports.getTransportations = async (req, res, next) => {
   try {
     let query;
- 
+
     const reqQuery = { ...req.query };
-    const removeFields = ['select', 'sort', 'page', 'limit', 'province'];
-    const searchableFields = ['name', 'type', 'providerName'];
- 
+    const removeFields = ['select', 'sort', 'page', 'limit', 'province', 'search'];
+    
+    const searchTerm = reqQuery.search ? reqQuery.search.trim() : null;
+    const province = reqQuery.province ? reqQuery.province.trim() : null;
+    
     removeFields.forEach(param => delete reqQuery[param]);
- 
-    searchableFields.forEach((field) => {
-      if (typeof reqQuery[field] === 'string' && reqQuery[field].trim()) {
-        reqQuery[field] = { $regex: reqQuery[field].trim(), $options: 'i' };
-      }
-    });
  
     let queryStr = JSON.stringify(reqQuery);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,
       match => `$${match}`);
-    const filters = JSON.parse(queryStr);
+    let filters = JSON.parse(queryStr);
  
-    // Handle province filter for pickUpArea and dropOffArea
-    if (req.query.province && req.query.province.trim()) {
-      const provinceRegex = { $regex: req.query.province.trim(), $options: 'i' };
+    // Handle search - regex match in name or providerName
+    if (searchTerm) {
+      const searchRegex = { $regex: searchTerm, $options: 'i' };
       filters.$or = [
-        { 'pickUpArea.location.province': provinceRegex },
-        { 'dropOffArea.location.province': provinceRegex }
+        { name: searchRegex },
+        { providerName: searchRegex }
       ];
     }
  
-    query = Transportation.find(filters);
+    if (province) {
+      const provinceRegex = new RegExp(`^${province}$`, 'i');
+      const provinceFilters = [
+        { 'pickUpArea.address.province': provinceRegex },  
+        { 'dropOffArea.address.province': provinceRegex }  
+      ];
+      
+      if (filters.$or) {
+        filters = {
+          $and: [
+            { $or: filters.$or },
+            { $or: provinceFilters }
+          ]
+        };
+      } else {
+        filters.$or = provinceFilters;
+      }
+    }
  
+    query = Transportation.find(filters);
+
     if (req.query.select) {
       const fields = req.query.select.split(',').join(' ');
       query = query.select(fields);
@@ -43,31 +55,30 @@ exports.getTransportations = async (req, res, next) => {
     if (req.query.sort) {
       const fields = req.query.sort.split(',').join(' ');
       query = query.sort(fields);
+    } else {
+      query = query.sort('-createdAt'); 
     }
-    else {
-      query = query.sort('-createAt');
-    }
- 
+
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 25;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const total = await Transportation.countDocuments(filters);
- 
+
     query = query.skip(startIndex).limit(limit);
- 
+
     const transportations = await query;
- 
+
     const pagination = {};
- 
+
     if (endIndex < total) {
-      pagination.next = { page: page + 1, limit }
+      pagination.next = { page: page + 1, limit };
     }
- 
+
     if (startIndex > 0) {
-      pagination.prev = { page: page - 1, limit }
+      pagination.prev = { page: page - 1, limit };
     }
- 
+
     res.status(200).json({
       success: true,
       count: transportations.length,
