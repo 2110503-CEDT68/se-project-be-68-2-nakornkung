@@ -21,31 +21,26 @@ exports.getTransportations = async (req, res, next) => {
     // Handle search - regex match in name or providerName
     if (searchTerm) {
       const searchRegex = { $regex: searchTerm, $options: 'i' };
-      filters.$or = [
-        { name: searchRegex },
-        { providerName: searchRegex }
-      ];
+      filters.$and ??= [];
+      filters.$and.push({
+        $or: [
+          { name: searchRegex },
+          { providerName: searchRegex }
+        ]
+      });
     }
  
     if (province) {
-      const provinceRegex = new RegExp(`^${province}$`, 'i');
       const provinceFilters = [
-        { 'pickUpArea.address.province': provinceRegex },  
-        { 'dropOffArea.address.province': provinceRegex }  
+        { 'pickUpArea.address.province': province },  
+        { 'dropOffArea.address.province': province }  
       ];
-      
-      if (filters.$or) {
-        filters = {
-          $and: [
-            { $or: filters.$or },
-            { $or: provinceFilters }
-          ]
-        };
-      } else {
-        filters.$or = provinceFilters;
-      }
+      filters.$and ??= [];
+      filters.$and.push({
+        $or: provinceFilters
+      });
     }
- 
+
     query = Transportation.find(filters);
 
     if (req.query.select) {
