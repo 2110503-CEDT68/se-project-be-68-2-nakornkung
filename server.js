@@ -26,6 +26,7 @@ const bookings = require('./routes/bookings');
 
 const transportations = require('./routes/transportations')
 const transportationBookings = require('./routes/transportationBookings')
+const attractions = require('./routes/attractions');
 
 //Query Parser
 app.set('query parser', 'extended');
@@ -41,7 +42,7 @@ app.use('/api/v1/auth', auth);
 app.use('/api/v1/bookings', bookings);
 app.use('/api/v1/transportations',transportations);
 app.use('/api/v1/transportationBookings',transportationBookings);
-
+app.use('/api/v1/attractions',attractions);
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, console.log('Server running in ', process.env.NODE_ENV, ' mode on port ', PORT));

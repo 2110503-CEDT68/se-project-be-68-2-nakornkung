@@ -3,6 +3,7 @@ const User = require('../models/User');
 
 // Protect routes
 exports.protect = async (req, res, next) => {
+  console.log('Current JWT_SECRET:', process.env.JWT_SECRET);
   let token;
 
   // Bearer
@@ -16,17 +17,19 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    console.log(decoded);
+    console.log('Decoded Token:', decoded); // เช็กว่าถอดรหัสได้ไหม
 
     req.user = await User.findById(decoded.id);
+    
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'No user found with this id' });
+    }
 
     next();
   } catch (err) {
-    console.log(err.stack);
-    return res.status(401).json({ success: false, message: 'Not authorize to access this route' });
+    console.error('JWT Error:', err.message); // ดูใน Terminal ว่ามันฟ้องว่า Token Expired หรือ Invalid Secret
+    return res.status(401).json({ success: false, message: 'Invalid token or secret' });
   }
 };
 
