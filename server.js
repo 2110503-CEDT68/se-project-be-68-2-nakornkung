@@ -1,15 +1,14 @@
 // const { setServers } = require("node:dns/promises");
 // setServers(["1.1.1.1", "8.8.8.8"]);
+const dotenv = require('dotenv/config');
 const express = require('express');
 const path = require('path');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
 const { swaggerUi, specs } = require('./swagger'); //swagger
 
 //load env
-dotenv.config()
 const PORT = process.env.PORT || 5000;
 
 //connect db
