@@ -10,12 +10,12 @@ exports.getTransportationBookings = async (req, res, next) => {
     if (req.user.role !== 'admin') {
         query = TransportationBooking.find({ user: req.user.id }).populate({
             path: 'transportation',
-            select: 'name type price'
+            select: 'name type price active'
         });
     } else {
         query = TransportationBooking.find().populate({
             path: 'transportation',
-            select: 'name type price'
+            select: 'name type price active'
         });
     }
     try {
@@ -34,7 +34,7 @@ exports.getTransportationBooking = async (req, res, next) => {
     try {
         const transportationBooking = await TransportationBooking.findById(req.params.id).populate({
             path: 'transportation',
-            select: 'name type price'
+            select: 'name type price active'
         });
         if (!transportationBooking) {
             return res.status(404).json({ success: false, message: `No booking with the id of ${req.params.id}` });
