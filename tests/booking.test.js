@@ -382,7 +382,7 @@ describe('Booking controller tests with mocked data', () => {
       Booking.findById.mockResolvedValue({ _id: 'booking123', user: { toString: () => 'user123' }, hotel: { toString: () => 'hotel123' }, checkInDate: '2024-05-01', checkOutDate: '2024-05-02' });
       User.findById.mockResolvedValue({ _id: 'user123' });
       Hotel.findById.mockResolvedValue({ _id: 'hotel123' });
-      Booking.find.mockResolvedValue([{ _id: 'otherBooking', numberOfNights: 2 }]);
+      Booking.find.mockResolvedValue(mockIterableResults([{ _id: 'otherBooking', numberOfNights: 2 }]));
 
       await updateBooking(req, res, next);
 

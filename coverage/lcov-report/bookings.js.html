@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.14% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>136/140</span>
+                <span class='fraction'>140/140</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.56% </span>
+                <span class="strong">89.69% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>83/97</span>
+                <span class='fraction'>87/97</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.12% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>135/139</span>
+                <span class='fraction'>139/139</span>
             </div>
         
             
@@ -684,20 +684,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -820,19 +820,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1111,11 +1111,11 @@ exports.addBooking = async (req, res, next) =&gt; {
     // 3 nights per hotel
     let totalNightsForHotel = 0;
     for (const booking of existingBookingsForHotel) {
-<span class="cstat-no" title="statement not covered" >      totalNightsForHotel += booking.numberOfNights || 0;</span>
+      totalNightsForHotel += booking.numberOfNights || <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
     }
 &nbsp;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (totalNightsForHotel + requestedNights &gt; 3) {
-<span class="cstat-no" title="statement not covered" >      return res.status(400).json({</span>
+    if (totalNightsForHotel + requestedNights &gt; 3) {
+      return res.status(400).json({
         success: false,
         message: `User ${req.body.user} has already booked ${totalNightsForHotel} nights at this hotel; cannot exceed 3 nights total per hotel.`
       });
@@ -1246,11 +1246,11 @@ exports.updateBooking = async (req, res, next) =&gt; {
 &nbsp;
       let totalNightsForHotel = 0;
       for (const existingBooking of existingBookingsForHotel) {
-<span class="cstat-no" title="statement not covered" >        totalNightsForHotel += existingBooking.numberOfNights || 0;</span>
+        totalNightsForHotel += existingBooking.numberOfNights || <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
       }
 &nbsp;
-      <span class="missing-if-branch" title="if path not taken" >I</span>if (totalNightsForHotel + requestedNights &gt; 3) {
-<span class="cstat-no" title="statement not covered" >        return res.status(400).json({</span>
+      if (totalNightsForHotel + requestedNights &gt; 3) {
+        return res.status(400).json({
           success: false,
           message: `User ${targetUserId} has already booked ${totalNightsForHotel} nights at this hotel; cannot exceed 3 nights total per hotel.`
         });
@@ -1324,7 +1324,7 @@ exports.deleteBooking = async (req, res, next) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-28T09:38:14.530Z
+                at 2026-04-28T09:41:07.500Z
             </div>
         <script src="prettify.js"></script>
         <script>
