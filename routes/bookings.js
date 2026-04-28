@@ -33,20 +33,6 @@
  *     responses:
  *       200:
  *         description: Booking list returned successfully
- *   post:
- *     tags: [Bookings]
- *     summary: Create a new booking for a hotel
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Booking'
- *     responses:
- *       200:
- *         description: Booking created successfully
  * /api/v1/bookings/{id}:
  *   get:
  *     tags: [Bookings]

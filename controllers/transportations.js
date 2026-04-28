@@ -10,8 +10,16 @@ exports.getTransportations = async (req, res, next) => {
     
     const searchTerm = reqQuery.search ? reqQuery.search.trim() : null;
     const province = reqQuery.province ? reqQuery.province.trim() : null;
-    
+
+    const searchableFields = ['name', 'type', 'providerName'];
+ 
     removeFields.forEach(param => delete reqQuery[param]);
+ 
+    searchableFields.forEach((field) => {
+      if (typeof reqQuery[field] === 'string' && reqQuery[field].trim()) {
+        reqQuery[field] = { $regex: reqQuery[field].trim(), $options: 'i' };
+      }
+    });
  
     let queryStr = JSON.stringify(reqQuery);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,
