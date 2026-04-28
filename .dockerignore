@@ -7,4 +7,5 @@ npm-debug.log
 Dockerfile
 .dockerignore
 
+tests/
 test.json
