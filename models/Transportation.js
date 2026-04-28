@@ -69,6 +69,10 @@ const TransportationSchema = new mongoose.Schema({
         type: String,
         required: [true,'Please add transportation img']
     },
+    active: {
+        type: Boolean,
+        default: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

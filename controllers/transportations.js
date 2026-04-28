@@ -17,6 +17,8 @@ exports.getTransportations = async (req, res, next) => {
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,
       match => `$${match}`);
     let filters = JSON.parse(queryStr);
+
+    filters.active = true;
  
     // Handle search - regex match in name or providerName
     if (searchTerm) {
@@ -147,6 +149,9 @@ exports.createTransportation = async (req, res, next) => {
 // @access  Private/Admin
 exports.updateTransportation = async (req,res,next)=>{
   try {
+    const current = await Transportation.findById(req.params.id);
+    if (!current || !current.active) return res.status(404).json({ success: false });
+
     const transportation = await Transportation.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
@@ -165,14 +170,10 @@ exports.updateTransportation = async (req,res,next)=>{
 // @access  Private/Admin
 exports.deleteTransportation = async (req,res,next)=>{
   try {
-    const transportation = await Transportation.findById(req.params.id);
-
-    if(!transportation){
-      return res.status(400).json({success:false, message:`Transportation not found with id of ${req.params.id}`})
+    const transportation = await Transportation.findByIdAndUpdate(req.params.id, { active: false });
+    if(!transportation) {
+      return res.status(404).json({success:false}) ;
     }
-    await TransportationBooking.deleteMany({transportation:req.params.id});
-    await Transportation.deleteOne({_id:req.params.id});
-  
     res.status(200).json({success:true,data:{}});
   } catch(err) {
     res.status(400).json({success:false}) ;
