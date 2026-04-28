@@ -6,19 +6,20 @@ const Booking = require('../models/Booking');
 // @route   GET /api/v1/transportations
 // @access  Public
 exports.getTransportationBookings = async (req, res, next) => {
-    let query;
-    if (req.user.role !== 'admin') {
-        query = TransportationBooking.find({ user: req.user.id }).populate({
-            path: 'transportation',
-            select: 'name providerName type pickUpArea dropOffArea price active'
-        });
-    } else {
-        query = TransportationBooking.find().populate({
-            path: 'transportation',
-            select: 'name providerName type pickUpArea dropOffArea price active'
-        });
-    }
     try {
+        let query;
+        if (req.user.role !== 'admin') {
+            query = TransportationBooking.find({ user: req.user.id }).populate({
+                path: 'transportation',
+                select: 'name providerName type pickUpArea dropOffArea price active'
+            });
+        } else {
+            query = TransportationBooking.find().populate({
+                path: 'transportation',
+                select: 'name providerName type pickUpArea dropOffArea price active'
+            });
+        }
+
         const transportationBookings = await query;
         res.status(200).json({ success: true, count: transportationBookings.length, data: transportationBookings })
     } catch (err) {
