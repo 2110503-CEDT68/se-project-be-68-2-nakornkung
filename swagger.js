@@ -133,7 +133,8 @@ const options = {
               }
             },
             price: { type: 'number', example: 120 },
-            img: { type: 'string', example: 'https://example.com/transport.jpg' }
+            img: { type: 'string', example: 'https://example.com/transport.jpg' },
+            active: { type: 'boolean' }
           }
         },
         TransportationBooking: {
