@@ -22,5 +22,17 @@
     "jest": "^30.3.0",
     "newman": "^6.2.2",
     "nodemon": "^3.1.14"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "controllers/**/*.js",
+      "!node_modules/**"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ]
   }
 }
