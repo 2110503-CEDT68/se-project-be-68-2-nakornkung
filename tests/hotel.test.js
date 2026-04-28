@@ -67,6 +67,37 @@ describe('Hotel Controller Unit Tests', () => {
       }));
     });
 
+    it('should support filter operators like gt and parse query correctly', async () => {
+      req.query = { 'price[gt]': '100', page: '1', limit: '10' };
+      const mockHotels = [{ name: 'Filtered Hotel' }];
+
+      const mockQuery = {
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue(mockHotels)
+      };
+
+      Hotel.find.mockImplementation((filter) => {
+        expect(filter).toEqual({ 'price[$gt]': '100' });
+        return mockQuery;
+      });
+      Hotel.countDocuments.mockImplementation((filter) => {
+        expect(filter).toEqual({ 'price[$gt]': '100' });
+        return Promise.resolve(1);
+      });
+
+      await getHotels(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+        success: true,
+        count: 1,
+        total: 1,
+        data: mockHotels
+      }));
+    });
+
     it('should handle pagination next/prev and default sort', async () => {
         req.query = { page: '2', limit: '1' };
         Hotel.countDocuments.mockResolvedValue(3); // Total 3, page 2, limit 1 -> has both next and prev
@@ -84,6 +115,31 @@ describe('Hotel Controller Unit Tests', () => {
         const response = res.json.mock.calls[0][0];
         expect(response.pagination).toHaveProperty('next');
         expect(response.pagination).toHaveProperty('prev');
+    });
+
+    it('should use default page and limit when omitted', async () => {
+      req.query = { name: 'Default Hotel' };
+      const mockHotels = [{ name: 'Default Hotel' }];
+
+      const mockQuery = {
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue(mockHotels)
+      };
+
+      Hotel.find.mockReturnValue(mockQuery);
+      Hotel.countDocuments.mockResolvedValue(1);
+
+      await getHotels(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+        success: true,
+        count: 1,
+        total: 1,
+        data: mockHotels
+      }));
     });
 
     it('should handle error in getHotels', async () => {
